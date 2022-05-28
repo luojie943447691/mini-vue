@@ -1,6 +1,7 @@
 import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { PublicInstanceProxyHandler } from "./componentPublicInstance"
+import { initSlots } from "./componentSlots"
 
 
 // 创建组件实例 
@@ -10,7 +11,7 @@ export function createComponentInstance(vnode) {
         type: vnode.type,
         setupState: {},
         props: {},
-
+        slots:{}
     }
     return component
 }
@@ -19,7 +20,7 @@ export function createComponentInstance(vnode) {
 export function setupComponent(instance) {
     // TODO 
     initProps(instance, instance.vnode.props)
-    //  initSlots()
+    initSlots(instance, instance.vnode.children)
 
     setupStatefulComponent(instance)
 }
