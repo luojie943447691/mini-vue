@@ -3,6 +3,8 @@ import { initProps } from "./componentProps"
 import { PublicInstanceProxyHandler } from "./componentPublicInstance"
 import { initSlots } from "./componentSlots"
 
+// 当前全局变量
+let currentInstance = null
 
 // 创建组件实例 
 export function createComponentInstance(vnode) {
@@ -39,10 +41,14 @@ function setupStatefulComponent(instance: any) {
     const { props } = instance
 
     if (setup) {
+        currentInstance = instance
         // 传递 props 
         const setupResult = setup(props, { emit:emit.bind(null, instance) }) // 开发小技巧，柯里化
-
+        currentInstance = null
+        
         handleSetupResult(instance, setupResult)
+
+        
     }
 
 }
@@ -69,3 +75,8 @@ function finishComponentSetup(instance: any) {
     // }
 }
 
+
+
+export function getCurrentInstance(){
+    return currentInstance
+}

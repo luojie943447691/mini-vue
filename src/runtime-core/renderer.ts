@@ -1,5 +1,6 @@
 import { ShapFlags } from "../shared/shapFlags"
 import { createComponentInstance, setupComponent } from "./component"
+import { Fragment,Text } from "./vnode"
 
 export function render(vnode, container: any) {
     // console.log('vnode1',vnode);
@@ -11,15 +12,31 @@ export function render(vnode, container: any) {
 function patch(vnode, container: any) {
     // 去处理组件
     // 判断是 element 还是 componnet 类型
-    // const { shapFlag } = vnode
-    if (typeof vnode.type === 'object') {
-        // if (shapFlag & ShapFlags.STATEFUL_COMPONENT) {
-        processComponent(vnode, container)
+    const { type } = vnode
+
+    switch (type) {
+        case Fragment: {
+            processFragment(vnode,container)
+            break;
+        }
+        case Text:{
+            processText(vnode,container)
+            break;
+        }
+        default: {
+            // const { shapFlag } = vnode
+            if (typeof type === 'object') {
+                // if (shapFlag & ShapFlags.STATEFUL_COMPONENT) {
+                processComponent(vnode, container)
+            }
+            else if (typeof type === 'string') {
+                // else if (shapFlag & ShapFlags.ELEMENT) {
+                processElement(vnode, container)
+            }
+            break;
+        }
     }
-    else if (typeof vnode.type === 'string') {
-        // else if (shapFlag & ShapFlags.ELEMENT) {
-        processElement(vnode, container)
-    }
+
 }
 
 // 处理组件
@@ -33,6 +50,18 @@ function processElement(vnode, container) {
 
     // 挂载 element
     mountElement(vnode, container)
+}
+
+// 处理 fragment，只需要渲染子节点即可
+function processFragment(vnode, container){
+    // 挂载 fragment
+    mountFragment(vnode, container)
+}
+
+// 处理 Text 文本节点
+function processText(vnode,container){
+    const el = vnode.el = document.createTextNode(vnode.children)
+    insert(el,container)
 }
 
 // 挂载 element 
@@ -59,7 +88,7 @@ function mountElement(vnode, container) {
         if (key.startsWith("on")) {
             const eventName = key.slice(2).toLowerCase();
 
-            el.addEventListener(eventName,props[key])
+            el.addEventListener(eventName, props[key])
         }
         else {
             // 获取 val 
@@ -94,7 +123,7 @@ function mountComponent(initialvnode: any, container: any) {
 
 function setupRenderEffect(instance: any, initialvnode, container: any) {
     // 取到 proxy 对象
-    const { proxy,props } = instance
+    const { proxy, props } = instance
     const subTree = instance.render.call(proxy)
 
     // initialvnode -> path
@@ -106,7 +135,14 @@ function setupRenderEffect(instance: any, initialvnode, container: any) {
     initialvnode.el = subTree.el
 }
 
+
+// 挂载 fragment
+function mountFragment(vnode, container){
+    mountChildren(vnode, container)
+}
+
+
 // 添加元素
-function insert(el: HTMLElement, parent: HTMLElement, anchor = null) {
+function insert(el: any, parent: HTMLElement, anchor = null) {
     parent.insertBefore(el, anchor)
 }
