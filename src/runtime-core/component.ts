@@ -41,11 +41,11 @@ function setupStatefulComponent(instance: any) {
     const { props } = instance
 
     if (setup) {
-        currentInstance = instance
+        setCurrentInstance(instance)
         // 传递 props 
         const setupResult = setup(props, { emit:emit.bind(null, instance) }) // 开发小技巧，柯里化
-        currentInstance = null
-        
+        setCurrentInstance(null)
+
         handleSetupResult(instance, setupResult)
 
         
@@ -75,8 +75,10 @@ function finishComponentSetup(instance: any) {
     // }
 }
 
-
-
 export function getCurrentInstance(){
     return currentInstance
+}
+
+function setCurrentInstance(value){
+    currentInstance = value
 }
