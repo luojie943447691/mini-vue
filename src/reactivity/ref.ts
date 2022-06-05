@@ -55,20 +55,26 @@ export const isRef =(ref) =>{
 
 export const unRef =(ref) =>{
     // 看看是不是 ref 对象，是的话就返回值
-    return isRef(ref) ? ref._rawValue : ref
+    // return isRef(ref) ? ref._rawValue : ref // 这里错的离谱 啊啊啊 
+    return isRef(ref) ? ref.value : ref
 }
 
 export const proxyRefs = (objectWithRef) =>{
     return new Proxy(objectWithRef,{
-        get(target,key,receiver){
+        get(target,key){
             // 判断数据是否是 ref 
-            return unRef(Reflect.get(target,key,receiver))
+            return unRef(Reflect.get(target,key))
         },
-        set(target,key,newValue,receiver){
-            const oldValue = Reflect.get(target,key,receiver)
-            if(unRef(oldValue) === unRef(newValue))return true;
-            const shouldValue = isRef(oldValue) && !isRef(newValue)? ref(newValue) :newValue
-            return Reflect.set(target,key, shouldValue,receiver)
+        set(target,key,value,receiver){
+            // const oldValue = Reflect.get(target,key,receiver)
+            // if(unRef(oldValue) === unRef(newValue))return true;
+            // const shouldValue = isRef(oldValue) && !isRef(newValue)? ref(newValue) :newValue
+            // return Reflect.set(target,key, shouldValue,receiver)
+            if (isRef(target[key]) && !isRef(value)) {
+                return (target[key].value = value);
+              } else {
+                return Reflect.set(target, key, value);
+              }
         }
     })
 }

@@ -1,3 +1,4 @@
 // mini-vue 入口
+export * from './runtime-dom'
 
-export * from './runtime-core/index'
+export * from './reactivity'

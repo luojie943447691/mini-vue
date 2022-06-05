@@ -1,9 +1,13 @@
-export { createApp } from './creatApp'
-
-export {h} from './h'
+export { h } from './h'
 
 export { renderSlots } from './helpers/renderSlots'
 
-export {createTextVNode} from './vnode'
+export { createTextVNode } from './vnode'
 
-export {getCurrentInstance} from './component'
+export { getCurrentInstance } from './component'
+
+export { provide, inject } from './apiInject'
+
+export { createRender } from './renderer'
+
+export { nextTick } from './scheduler'

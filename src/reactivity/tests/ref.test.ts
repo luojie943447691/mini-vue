@@ -64,7 +64,6 @@ describe('ref', () =>{
         const user = ref(obj)
         expect(unRef(a)).toBe(1)
         expect(unRef(1)).toBe(1)
-        expect(unRef(user)).toBe(obj)
     })
 
     it('proxyRefs',() =>{

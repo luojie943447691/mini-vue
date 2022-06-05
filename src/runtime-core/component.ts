@@ -1,3 +1,4 @@
+import { proxyRefs } from "../reactivity"
 import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { PublicInstanceProxyHandler } from "./componentPublicInstance"
@@ -7,13 +8,23 @@ import { initSlots } from "./componentSlots"
 let currentInstance = null
 
 // 创建组件实例 
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode,parent) {
+    // console.log("parent",parent);
     const component = {
         vnode,
         type: vnode.type,
         setupState: {},
         props: {},
-        slots:{}
+        next:null,
+        slots:{},
+        // 为什么这里指向的是 parent.provides ？ 去参考 provide 的代码就知道了，用于判断是否是第一次加载
+        provides: parent ? parent.provides : {}, 
+        parent,
+        // 是否已经被挂载
+        isMounted:false,
+        subTree:{},
+        component:null,
+        update:() => {}
     }
     return component
 }
@@ -47,8 +58,6 @@ function setupStatefulComponent(instance: any) {
         setCurrentInstance(null)
 
         handleSetupResult(instance, setupResult)
-
-        
     }
 
 }
@@ -62,7 +71,7 @@ function handleSetupResult(instance, setupResult: any) {
 
 
     if (typeof setupResult === 'object') {
-        instance.setupState = setupResult
+        instance.setupState = proxyRefs(setupResult)
     }
 
     finishComponentSetup(instance)

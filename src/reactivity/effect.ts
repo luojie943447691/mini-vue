@@ -94,6 +94,7 @@ export function track(target: Record<any, any>, key: string | symbol) {
 export function isTracking(){
     // 如果我们的对象没有执行 effect 的话，是没有 activeEffect 的，所以得判断一下，如我们的 reactive.test.ts 
     return shouldTrack && activeEffect !== undefined
+    // return activeEffect !== undefined
 }
 
 export function trackEffect(deps){
